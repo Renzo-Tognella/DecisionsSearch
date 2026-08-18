@@ -1,0 +1,8 @@
+# Template do gold set (G8) — copie para tests/golden/queries.jsonl e preencha com
+# queries REAIS do seu histórico (ExampleProjectA, ExampleProjectB, DecisionsSearch, ExampleProject, ExampleProjectC...).
+# expected_memory_ids: os memory_id que DEVERIAM voltar para a query (pegue via
+# memory.query/memory.get). difficulty: easy|medium|hard. Este arquivo é um
+# modelo para um harness de avaliação mantido fora da distribuição pública.
+{"query": "qual a convencao de cache key no ExampleProject?", "project": "ExampleProject", "expected_memory_ids": ["<memory_id_aqui>"], "difficulty": "easy"}
+{"query": "como o calculo de PLD e feito no CORE?", "project": "CORE", "expected_memory_ids": ["<memory_id_aqui>"], "difficulty": "medium"}
+{"query": "qual o padrao de retry para chamadas externas?", "project": "CORE", "expected_memory_ids": ["<memory_id_aqui>"], "difficulty": "hard"}

@@ -1,0 +1,187 @@
+# ============================================================================
+# DecisionsSearch Configuration
+# ============================================================================
+# Copy this file to decisionssearch.yaml and fill in your values.
+# DecisionsSearch reads this file on startup.
+# Environment variables like ${MY_VAR} are resolved automatically.
+# ============================================================================
+
+# -- Mode --------------------------------------------------------------------
+# The current HTTP/MCP container composes Neo4j + Qdrant. Keep this as `full`.
+# `light` remains a legacy configuration label; it does not activate a
+# JSONL-only server path. The benchmark has a separate explicit local backend.
+mode: full
+
+# -- Data directory (landing zone, snapshots and local operational state) -----
+data_dir: data
+
+# -- Agent Worker ------------------------------------------------------------
+# The coding agent that investigates errors and creates fixes.
+# provider options: "opencode" | "codex" | "claude" | "zai" | "openrouter"
+agent:
+  provider: opencode
+
+  # Working directory where the agent runs (your project root)
+  workdir: .
+
+  # Maximum seconds to wait for the agent to finish
+  timeout: 600
+
+  # -- OpenCode (opencode.ai) ------------------------------------------------
+  # Local CLI agent. No API key needed — just install opencode.
+  #   curl -fsSL https://opencode.ai/install | bash
+  opencode:
+    # Agent profile to use (default: bug-fixer)
+    agent: bug-fixer
+
+  # -- Codex (OpenAI API) ----------------------------------------------------
+  # Cloud agent via API subscription. Needs your OpenAI API key.
+  codex:
+    model: gpt-4o
+    # Your OpenAI API key — or set OPENAI_API_KEY env var
+    api_key: ""
+    # Optional: custom base URL (for Azure OpenAI, proxies)
+    # base_url: "https://api.openai.com/v1"
+
+  # -- Claude (Anthropic API) ------------------------------------------------
+  # Cloud agent via API subscription. Needs your Anthropic API key.
+  claude:
+    model: claude-sonnet-4-20250514
+    # Your Anthropic API key — or set ANTHROPIC_API_KEY env var
+    api_key: ""
+    # Optional: custom base URL
+    # base_url: "https://api.anthropic.com"
+
+  # -- Z.ai (ZhipuAI API) ----------------------------------------------------
+  # Cloud agent via ZhipuAI API. Needs your Z.ai API key.
+  zai:
+    model: glm-4-plus
+    # Your Z.ai API key — or set ZAI_API_KEY env var
+    api_key: ""
+    # Optional: custom base URL
+    # base_url: "https://open.bigmodel.cn/api/paas/v4"
+
+  # -- OpenRouter -----------------------------------------------------------
+  # Any chat model available through OpenRouter's OpenAI-compatible endpoint.
+  # The API key can also come from OPENROUTER_API_KEY.
+  openrouter:
+    model: openai/gpt-4o-mini
+    api_key: ""
+    # Optional: custom proxy/base URL
+    # base_url: "https://openrouter.ai/api/v1"
+
+# -- Notifications -----------------------------------------------------------
+# Where to send alerts when errors are detected or auto-fixes are created.
+notifications:
+  # Slack webhook
+  slack:
+    enabled: false
+    webhook_url: ""
+    # Optional: channel override (e.g. "#alerts")
+    # channel: ""
+
+  # Generic webhook (POST JSON to any URL)
+  generic_webhook:
+    enabled: false
+    url: ""
+    # Optional headers (e.g. Authorization: Bearer ...)
+    headers: {}
+    #   Authorization: "Bearer ${MY_API_TOKEN}"
+
+# -- Scheduler ---------------------------------------------------------------
+# Background jobs (consolidation, summaries, cleanup).
+scheduler:
+  # Persistence: "memory" (lost on restart) or "sqlite" (survives restarts)
+  persistence: memory
+  # SQLite path (only if persistence=sqlite)
+  sqlite_path: data/scheduler.db
+
+  # Cron schedules (standard cron format: minute hour day month weekday)
+  jobs:
+    daily_consolidation: "0 3 * * *"     # 3 AM UTC daily
+    daily_summary: "0 4 * * *"           # 4 AM UTC daily
+    daily_scan: "0 8 * * *"              # 8 AM UTC daily — scans PRs + Shortcut cards
+
+  # Jobs to run immediately on startup (first boot of the day)
+  run_on_startup:
+    - daily_scan
+
+# -- Safety ------------------------------------------------------------------
+# Guard rails for autonomous error fixing.
+safety:
+  # Minimum confidence (0.0-1.0) required to auto-create a PR
+  min_confidence: 0.7
+
+  # Max auto-fixes per hour (circuit breaker)
+  max_auto_fixes_per_hour: 3
+
+  # Paths the agent is NOT allowed to modify
+  blocked_paths:
+    - auth/
+    - security/
+    - .env
+    - credentials
+    - secrets
+
+  # List of error types to NEVER auto-fix (regex patterns)
+  # blocked_error_patterns:
+  #   - "auth.*"
+  #   - "permission.*"
+
+# -- Error Ingestion (webhook endpoint) --------------------------------------
+# -- Error Ingestion (webhook endpoint) --------------------------------------
+# Configure the HTTP endpoint that receives error events.
+# IMPORTANT: webhook_secret MUST be set to a strong random value in production.
+# Generate one with: openssl rand -hex 32
+errors:
+  webhook_path: /webhook/errors
+  webhook_secret: ""
+
+  # Optional: allowed source IPs or CIDR ranges
+  # allowed_sources:
+  #   - "10.0.0.0/8"
+  #   - "192.168.1.0/24"
+
+# -- Daily Scan (PRs + Shortcut cards) --------------------------------------
+# Automatically scans GitHub PRs and Shortcut cards on startup and daily.
+# Results are ingested into DecisionsSearch memory.
+daily_scan:
+  enabled: false
+
+  # Project name in DecisionsSearch (used as namespace for memories)
+  project: CORE
+
+  # GitHub repos to scan (format: "owner/repo")
+  repos:
+    - my-org/my-project
+  # GitHub token — or set GITHUB_TOKEN env var
+  # github_token: \${GITHUB_TOKEN}
+
+  # Shortcut integration
+  # shortcut_token: ""           # or set SHORTCUT_TOKEN env var
+  # shortcut_teams:              # team IDs to filter (empty = all)
+  #   - team-uuid-here
+
+# -- GitHub Integration (auto-fix PRs) --------------------------------------
+github:
+  # Create PRs automatically when agent fixes an error
+  auto_create_pr: true
+
+  # Default base branch for fix PRs
+  base_branch: main
+
+  # Labels applied to auto-fix PRs
+  pr_labels:
+    - auto-fix
+    - needs-review
+
+# -- Full Mode Infrastructure (only needed when mode=full) ------------------
+# neo4j:
+#   uri: bolt://localhost:7687
+#   user: neo4j
+#   password: ${NEO4J_PASSWORD}
+#
+# qdrant:
+#   host: localhost
+#   port: 6333
+#   collection: memories

@@ -1,0 +1,10 @@
+{"query": "design rules for naming", "project": "CORE", "expected_category": "DesignRule", "min_results": 0, "description": "Should return design rules"}
+{"query": "architectural decisions about database", "project": "CORE", "expected_category": "ArchitecturalDecision", "min_results": 0, "description": "Should return ADRs"}
+{"query": "business rules for billing", "project": "CORE", "expected_category": "BusinessRule", "min_results": 0, "description": "Should return business rules"}
+{"query": "design patterns used", "project": "CORE", "expected_category": "DesignPattern", "min_results": 0, "description": "Should return patterns"}
+{"query": "como lidar com erros", "project": "CORE", "expected_category": null, "min_results": 0, "description": "Portuguese query should work"}
+{"query": "", "project": "CORE", "expected_category": null, "min_results": 0, "description": "Empty query returns structural results"}
+{"query": "NEO4J_URI configuration", "project": "CORE", "expected_category": "DesignRule", "min_results": 0, "description": "Exact term matching"}
+{"query": "authentication flow", "project": "CORE", "expected_category": null, "min_results": 0, "description": "General architecture query"}
+{"query": "weight calculation formula", "project": "CORE", "expected_category": "DesignRule", "min_results": 0, "description": "Should match weight-related rules"}
+{"query": "PR memory cross referencing", "project": "CORE", "expected_category": null, "min_results": 0, "description": "Should match PR-related memories"}

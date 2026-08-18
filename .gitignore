@@ -1,0 +1,69 @@
+.DS_Store
+
+# Local credentials and runtime configuration.
+.env
+.env.*
+!.env.example
+config/decisionssearch.yaml
+**/decisionssearch.yaml
+**/.env
+**/.env.*
+!.env.example
+
+# Local runtime state and generated evaluation data.
+data/
+.decisionssearch/
+artifacts/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+memory_server.egg-info/
+decisionssearch.egg-info/
+
+# Python/build/test caches.
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Private worktrees and unrelated local projects.
+.claude/
+.kiro/
+/*Job/
+/*-admin/
+.agents/
+.superpowers/
+
+# Internal planning/document corpus. Release PDFs and the public memory report
+# are intentionally versioned.
+docs/
+docs-public/*
+!docs-public/relatorio_resultados.pdf
+!docs-public/instalacao.pdf
+!docs-public/relatorio_memoria.md
+!docs-public/instalacao.md
+!docs-public/relatorio_resultados.md
+*.pdf
+!docs-public/
+!docs-public/relatorio_resultados.pdf
+!docs-public/instalacao.pdf
+!docs-public/relatorio_memoria.md
+
+# Evaluation material may contain repository-specific code, PRs, or memory data.
+scripts/public_repo_benchmark.py
+scripts/ingest_subagent_memories.py
+scripts/run_subagent_memory_benchmark.py
+scripts/generate_subagent_docker_report.py
+scripts/generate_public_repo_report.py
+scripts/generate_professional_report.py
+tests/unit/test_public_repo_benchmark.py
+tests/golden/recall_queries.jsonl
